@@ -32,6 +32,7 @@ import { useMutation, useQuery, useQueryClient } from "react-query";
 import AddCircleOutlinedIcon from '@mui/icons-material/AddCircleOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import PausePresentationTwoToneIcon from '@mui/icons-material/PausePresentationTwoTone';
+import FormatDate from '../utils/FormatDate.tsx';
 const clienteRepository = new ClienteRepository();
 
 interface Data {
@@ -560,14 +561,16 @@ export default function EnhancedTable() {
                         value={newCliente.status}
                         onChange={(e) => setNewCliente({ ...newCliente, status: e.target.value })}
                     />
-                    <TextField
-                        margin="dense"
+                    <FormatDate
+                        name="data"
                         label="Data"
-                        type="text"
-                        fullWidth
-                        variant="standard"
                         value={newCliente.data}
-                        onChange={(e) => setNewCliente({ ...newCliente, data: e.target.value })}
+                        onChange={(e) =>
+                            setNewCliente({
+                                ...newCliente,
+                                data: e?.$d?.toLocaleDateString("en-Ca"),
+                            })
+                        }
                     />
                 </DialogContent>
                 <DialogActions>
