@@ -16,12 +16,29 @@ class ClienteServices extends Services {
     }
     async cadastrar(dto) {
         try {
-            const newNote = await clienteRepository.criaRegistro(dto);
-            return newNote;
+            const newCliente = await clienteRepository.criaRegistro(dto);
+            return newCliente;
         } catch (error) {
-            throw new Error("Erro ao cadastrar nota");
+            throw new Error("Erro ao cadastrar cliente");
         }
     }
+    async pegaTudoEscopo() {
+        try {
+            const escopos = [
+                "atividadesCliente",
+
+            ];
+
+            const listaClientes = await this.entidadeRepository.getAllInclude(
+                escopos
+            );
+
+            return listaClientes;
+        } catch (error) {
+            throw new Error(error);
+        }
+    }
+
 }
 
 module.exports = ClienteServices;

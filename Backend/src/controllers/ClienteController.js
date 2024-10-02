@@ -20,6 +20,15 @@ class ClienteController extends Controller {
             // erro
         }
     }
+    async pegaTudoEscopo(req, res) {
+        try {
+            const listaDeRegistro =
+                await this.entidadeService.pegaTudoEscopo();
+            return res.status(200).json(listaDeRegistro);
+        } catch (erro) {
+            return res.status(400).send({ message: erro.message });
+        }
+    }
 }
 
 module.exports = ClienteController;

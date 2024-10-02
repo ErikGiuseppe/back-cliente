@@ -1,6 +1,7 @@
 import Headers from "../components/Header.tsx"
 import Footer from "../components/Footer.tsx"
-import ClienteTable from "../components/Table.tsx"
+import ClienteTable from "../components/TableClient.tsx"
+import Table from "../components/Table.tsx"
 import FabCellPhone from "../components/FabCellPhone.tsx"
 import { QueryClient, QueryClientProvider } from 'react-query';
 const queryClient = new QueryClient();

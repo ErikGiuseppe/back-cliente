@@ -6,6 +6,7 @@ const clienteController = new ClienteController();
 const router = Router();
 
 router.get("/cliente", (req, res) => clienteController.pegaTodos(req, res));
+router.get("/cliente/todos", (req, res) => clienteController.pegaTudoEscopo(req, res));
 // router.get('/note/:id', roles(["desenvolvedor"]),(req,res) => noteController.pegaUmPorId(req, res))
 router.get("/cliente/id/:id", (req, res) => clienteController.pegaUmPorId(req, res));
 router.get("/cliente/nome/:nome", (req, res) =>

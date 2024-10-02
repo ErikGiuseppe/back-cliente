@@ -2,21 +2,12 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('clientes', {
+        await queryInterface.createTable('atividades', {
             id: {
                 allowNull: false,
                 primaryKey: true,
                 type: Sequelize.UUID,
                 defaultValue: Sequelize.UUID
-            },
-            nome: {
-                type: Sequelize.STRING
-            },
-            gerente: {
-                type: Sequelize.STRING
-            },
-            telefone: {
-                type: Sequelize.STRING
             },
             situacao: {
                 type: Sequelize.STRING
@@ -24,14 +15,15 @@ module.exports = {
             providencias: {
                 type: Sequelize.STRING
             },
-            status: {
-                type: Sequelize.STRING
-            },
-            cpf: {
-                type: Sequelize.STRING
-            },
             data: {
                 type: Sequelize.DATEONLY
+            },
+            cliente_id: {
+                allowNull: false,
+                type: Sequelize.UUID,
+                references: { model: "clientes", key: "id" },
+                onDelete: "CASCADE",
+                onUpdate: "CASCADE",
             },
             createdAt: {
                 allowNull: false,
@@ -44,6 +36,6 @@ module.exports = {
         });
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable('clientes');
+        await queryInterface.dropTable('atividades');
     }
 };
