@@ -248,7 +248,7 @@ export default function EnhancedTable() {
         providencias: '',
         cliente_id: '',
 
-        data:null 
+        data: null
     });
     const { data = [], } = useQuery("cliente", () => clienteRepository.getAllEscopo(), {
         retry: 2,
@@ -334,7 +334,7 @@ export default function EnhancedTable() {
             situacao: '',
             providencias: '',
             cliente_id: '',
-            data:null 
+            data: null
         });
 
     };
@@ -549,7 +549,7 @@ export default function EnhancedTable() {
                                     <Typography variant="h6" >
                                         Histórico
                                     </Typography>
-                                    <IconButton size='small' onClick={() => atividadeHandleAdd({ cliente_id: row.id,data: today.toLocaleDateString("en-Ca") })}>
+                                    <IconButton size='small' onClick={() => atividadeHandleAdd({ cliente_id: row.id, data: today.toLocaleDateString("en-Ca") })}>
                                         <AddCircleOutlinedIcon />
                                     </IconButton>
                                 </div>
@@ -729,7 +729,7 @@ export default function EnhancedTable() {
                         type="text"
                         fullWidth
                         variant="standard"
-                        value={newAtividade.situacao}
+                        value={newAtividade.situacao || ''} 
                         onChange={(e) => setNewAtividade({ ...newAtividade, situacao: e.target.value })}
                     />
                     <TextField
@@ -738,42 +738,39 @@ export default function EnhancedTable() {
                         type="text"
                         fullWidth
                         variant="standard"
-                        value={newAtividade.providencias}
+                        value={newAtividade.providencias || ''} 
                         onChange={(e) => setNewAtividade({ ...newAtividade, providencias: e.target.value })}
                     />
                     <FormatDate
                         name="data"
                         label="Data"
-                        value={dayjs(newAtividade.data)}
+                        value={newAtividade.data ? dayjs(newAtividade.data) : null} 
                         onChange={(e: any) =>
                             setNewAtividade({
                                 ...newAtividade,
-                                data: e?.$d?.toLocaleDateString("en-Ca"),
+                                data: e?.$d ? e.$d.toLocaleDateString("en-Ca") : null, 
                             })
                         }
-
                     />
-
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={atividadeHandleClose}>Cancelar</Button>
                     <Button onClick={() => {
                         if (newAtividade.id) {
-
-
                             mutationEditAtividade.mutate(newAtividade);
                         } else {
-                            // Se não existe ID, é uma adição
                             if (!newAtividade.data) {
                                 alert("Por favor, selecione uma data.");
+                            } else {
+                                addMutationAtividade.mutate(newAtividade);
                             }
-                            else { addMutationAtividade.mutate(newAtividade); }
                         }
                     }}>
                         {newAtividade.id ? "Salvar" : "Adicionar"}
                     </Button>
                 </DialogActions>
             </Dialog>
+
 
         </Box>
     );
