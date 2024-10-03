@@ -1,6 +1,5 @@
 import Headers from "../components/Header.tsx"
 import Footer from "../components/Footer.tsx"
-import ClienteTable from "../components/TableClient.tsx"
 import Table from "../components/Table.tsx"
 import FabCellPhone from "../components/FabCellPhone.tsx"
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -18,7 +17,7 @@ const Home = () => {
             <main style={{ flex: 1 }}>
                 <Headers />
                 <QueryClientProvider client={queryClient}>
-                    <ClienteTable />
+                    <Table />
                 </QueryClientProvider>
 
                 <FabCellPhone />
