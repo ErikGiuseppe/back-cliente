@@ -225,6 +225,13 @@ interface NewCliente {
     cpf: string;
     status: string;
 }
+interface NewAtividade {
+    id?: string;
+    situacao: string;
+    providencias: string;
+    cliente_id: string;
+    data: string
+}
 export default function EnhancedTable() {
     const queryClient = useQueryClient();
     const [newCliente, setNewCliente] = React.useState<NewCliente>({
@@ -233,6 +240,12 @@ export default function EnhancedTable() {
         telefone: '',
         cpf: '',
         status: '',
+    });
+    const [newAtividade, setNewAtividade] = React.useState<NewAtividade>({
+        situacao: '',
+        providencias: '',
+        cliente_id: '',
+        data: ''
     });
     const { data = [], } = useQuery("cliente", () => clienteRepository.getAllEscopo(), {
         retry: 2,
@@ -271,6 +284,17 @@ export default function EnhancedTable() {
             console.error("Erro ao adicionar cliente:", error);
         },
     });
+    const mutationEditAtividade = useMutation<void, Error, NewAtividade>((newAtividade) => atividadeRepository.editAtividade(newAtividade), {
+
+        onSuccess: () => {
+            queryClient.invalidateQueries("cliente"); // Atualiza a lista de clientes
+            handleClose(); // Fecha o modal
+        },
+        onError: (error) => {
+            console.error("Erro ao adicionar cliente:", error);
+        },
+    });
+
     const clients = Array.isArray(data) ? data : [];
 
     if (data.isLoading) return <div className="loading">Carregando...</div>;
@@ -303,10 +327,25 @@ export default function EnhancedTable() {
     };
     const atividadeHandleClose = () => {
         atividadeSetOpen(false);
-        setNewCliente({ nome: '', gerente: '', telefone: '', status: '', cpf: '', });
+        setNewAtividade({
+            situacao: '',
+            providencias: '',
+            cliente_id: '',
+            data: ''
+        });
 
     };
     const addMutation = useMutation<void, Error, NewCliente>((newCliente) => clienteRepository.createCliente(newCliente), {
+
+        onSuccess: () => {
+            queryClient.invalidateQueries("cliente"); // Atualiza a lista de clientes
+            handleClose(); // Fecha o modal
+        },
+        onError: (error) => {
+            console.error("Erro ao adicionar cliente:", error);
+        },
+    });
+    const addMutationAtividade = useMutation<void, Error, NewAtividade>((newAtividade) => atividadeRepository.createAtividade(newAtividade), {
 
         onSuccess: () => {
             queryClient.invalidateQueries("cliente"); // Atualiza a lista de clientes
@@ -327,11 +366,14 @@ export default function EnhancedTable() {
 
 
     // Altere a função handleAdd para abrir o modal
+    const atividadeHandleAdd = (atividadeParaCriar: any) => {
+        setNewAtividade(atividadeParaCriar); // Define os dados do cliente no estado
+        atividadeSetOpen(true); // Abre o diálogo de edição
+
+    };
+
     const handleAdd = () => {
         handleClickOpen();
-    };
-    const atividadeHandleAdd = () => {
-        atividadeHandleClickOpen();
     };
 
     const handleDelete = (id: any) => {
@@ -348,6 +390,11 @@ export default function EnhancedTable() {
     const handleEdit = (clienteParaEditar: any) => {
         setNewCliente(clienteParaEditar); // Define os dados do cliente no estado
         setOpen(true); // Abre o diálogo de edição
+
+    };
+    const atividadeHandleEdit = (atividadeParaEditar: any) => {
+        setNewAtividade(atividadeParaEditar); // Define os dados do cliente no estado
+        atividadeSetOpen(true); // Abre o diálogo de edição
 
     };
 
@@ -493,7 +540,7 @@ export default function EnhancedTable() {
                                     <Typography variant="h6" >
                                         Histórico
                                     </Typography>
-                                    <IconButton size='small' onClick={atividadeHandleAdd}>
+                                    <IconButton size='small' onClick={() => atividadeHandleAdd({cliente_id:row.id})}>
                                         <AddCircleOutlinedIcon />
                                     </IconButton>
                                 </div>
@@ -520,7 +567,7 @@ export default function EnhancedTable() {
                                                     <TableCell align="right" >
                                                         <IconButton
                                                             size="small"
-                                                            onClick={() => handleEdit({ id: row.id, nome: row.nome, cpf: row.cpf, gerente: row.gerente, telefone: row.telefone, status: row.status })}
+                                                            onClick={() => atividadeHandleEdit({ id: atividadeRow.id, situacao: atividadeRow.situacao, providencias: atividadeRow.providencias, data: atividadeRow.data, cliente_id: row.id })}
                                                         >
                                                             <EditOutlinedIcon />
                                                         </IconButton>
@@ -663,6 +710,58 @@ export default function EnhancedTable() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={atividadeOpen} onClose={atividadeHandleClose}>
+                <DialogTitle>{newAtividade.id ? "Editar Atividade" : "Adicionar Atividade"}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Situação"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={newAtividade.situacao}
+                        onChange={(e) => setNewAtividade({ ...newAtividade, situacao: e.target.value })}
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Providência"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                        value={newAtividade.providencias}
+                        onChange={(e) => setNewAtividade({ ...newAtividade, providencias: e.target.value })}
+                    />
+                    <FormatDate
+                        name="data"
+                        label="Data"
+                        value={newAtividade.data}
+                        onChange={(e: any) =>
+                            setNewAtividade({
+                                ...newAtividade,
+                                data: e?.$d?.toLocaleDateString("en-Ca"),
+                            })
+                        }
+                    />
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={atividadeHandleClose}>Cancelar</Button>
+                    <Button onClick={() => {
+                        if (newAtividade.id) {
+
+                            // Se já existe um ID, é uma edição
+                            mutationEditAtividade.mutate(newAtividade);
+                        } else {
+                            // Se não existe ID, é uma adição
+                            addMutationAtividade.mutate(newAtividade);
+                        }
+                    }}>
+                        {newCliente.id ? "Salvar" : "Adicionar"}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </Box>
     );
 }
