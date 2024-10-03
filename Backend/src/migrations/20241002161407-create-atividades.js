@@ -16,6 +16,7 @@ module.exports = {
                 type: Sequelize.STRING
             },
             data: {
+                allowNull: false,
                 type: Sequelize.DATEONLY
             },
             cliente_id: {
